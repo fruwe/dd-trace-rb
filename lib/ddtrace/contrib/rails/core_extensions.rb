@@ -239,6 +239,7 @@ module Datadog
         when ActionDispatch::Response
           response.status
         when Array
+          # Likely a Rack response array: first element is the status.
           status = response.first
           status.class <= Integer ? status : nil
         else
