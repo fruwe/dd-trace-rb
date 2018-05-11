@@ -60,6 +60,13 @@ jobs:
     - run:
         working_directory: ~/DataDog/dd-trace-rb
         command: 'sudo docker info >/dev/null 2>&1 || sudo service docker start; '
+    - setup_remote_docker
+    - run:
+        name: Install Docker Compose
+        command: |
+          curl -L https://github.com/docker/compose/releases/download/1.19.0/docker-compose-`uname -s`-`uname -m` > ~/docker-compose
+          chmod +x ~/docker-compose
+          sudo mv ~/docker-compose /usr/local/bin/docker-compose
     - run:
         working_directory: ~/DataDog/dd-trace-rb
         command: rm -f DataDog/dd-trace-rb/.rvmrc; echo 2.2.7 > DataDog/dd-trace-rb/.ruby-version; rvm use 2.2.7 --default
@@ -77,8 +84,11 @@ jobs:
     # This is based on your 1.0 configuration file or project settings
     - run: mkdir -p ~/rubies_cache
     - run: rsync -a -v --ignore-existing ~/rubies_cache/ /opt/circleci/.rvm/rubies
-    - run: pip install docker-compose==1.7.1
-    - run: docker-compose up -d | cat
+    - run:
+        name: Start Docker Compose
+        command: |
+          set -x
+          docker-compose up -d
     - run: |
         for version in $(echo "$MRI_VERSIONS,$MRI_OLD_VERSIONS,$JRUBY_VERSIONS" | tr "," "\n"); do
           $(rvm list | grep -q $version) || rvm install $version --rubygems 2.6.11
