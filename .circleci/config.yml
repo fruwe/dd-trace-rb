@@ -53,6 +53,11 @@ jobs:
     - run: mkdir -p $CIRCLE_ARTIFACTS $CIRCLE_TEST_REPORTS
     # This is based on your 1.0 configuration file or project settings
     - run:
+        name: Set VERSION_SUFFIX
+        command: |
+          echo 'export VERSION_SUFFIX=.pre.$CIRCLE_BUILD_NUM' >> $BASH_ENV
+          source $BASH_ENV
+    - run:
         working_directory: ~/DataDog/dd-trace-rb
         command: 'sudo docker info >/dev/null 2>&1 || sudo service docker start; '
     - run:
