@@ -9,7 +9,12 @@ module Datadog
           def load_adapter!
             begin
               require 'pg'
-              connector = 'postgres://postgres:postgres@127.0.0.1:55432/postgres'
+              user = ENV.fetch('TEST_POSTGRES_USER', 'postgres')
+              pw = ENV.fetch('TEST_POSTGRES_PASSWORD', 'postgres')
+              host = ENV.fetch('TEST_POSTGRES_HOST', '127.0.0.1')
+              port = ENV.fetch('TEST_POSTGRES_PORT', 5432)
+              db = ENV.fetch('TEST_POSTGRES_DB', 'postgres')
+              connector = "postgres://#{user}:#{pw}@#{host}:#{port}/#{db}"
 
               # old versions of Rails (eg 3.0) require that sort of Monkey Patching,
               # since using ActiveRecord is tricky (version mismatch etc.)
@@ -19,12 +24,12 @@ module Datadog
                     { 'test' => { 'adapter' => 'postgresql',
                                 'encoding' => 'utf8',
                                 'reconnect' => false,
-                                'database' => 'postgres',
+                                'database' => ENV.fetch('TEST_POSTGRES_DB', 'postgres'),
                                 'pool' => 5,
-                                'username' => 'postgres',
-                                'password' => 'postgres',
-                                'host' => 'localhost',
-                                'port' => '55432' } }
+                                'username' => ENV.fetch('TEST_POSTGRES_USER', 'postgres'),
+                                'password' => ENV.fetch('TEST_POSTGRES_PASSWORD', 'postgres'),
+                                'host' => ENV.fetch('TEST_POSTGRES_HOST', '127.0.0.1'),
+                                'port' => ENV.fetch('TEST_POSTGRES_PORT', 5432) } }
                   end
                 end
               end
@@ -34,21 +39,34 @@ module Datadog
 
             begin
               require 'mysql2'
-              connector = 'mysql2://root:root@127.0.0.1:53306/mysql'
+              root_pw = ENV.fetch('TEST_MYSQL_ROOT_PASSWORD', 'root')
+              host = ENV.fetch('TEST_MYSQL_HOST', '127.0.0.1')
+              port = ENV.fetch('TEST_MYSQL_PORT', '3306')
+              db = ENV.fetch('TEST_MYSQL_DB', 'mysql')
+              connector = "mysql2://root:#{root_pw}@#{host}:#{port}/#{db}"
             rescue LoadError
               puts 'mysql2 gem not found, trying another connector'
             end
 
             begin
               require 'activerecord-jdbcpostgresql-adapter'
-              connector = 'postgres://postgres:postgres@127.0.0.1:55432/postgres'
+              user = ENV.fetch('TEST_POSTGRES_USER', 'postgres')
+              pw = ENV.fetch('TEST_POSTGRES_PASSWORD', 'postgres')
+              host = ENV.fetch('TEST_POSTGRES_HOST', '127.0.0.1')
+              port = ENV.fetch('TEST_POSTGRES_PORT', 5432)
+              db = ENV.fetch('TEST_POSTGRES_DB', 'postgres')
+              connector = "postgres://#{user}:#{pw}@#{host}:#{port}/#{db}"
             rescue LoadError
               puts 'jdbc-postgres gem not found, trying another connector'
             end
 
             begin
               require 'activerecord-jdbcmysql-adapter'
-              connector = 'mysql2://root:root@127.0.0.1:53306/mysql'
+              root_pw = ENV.fetch('TEST_MYSQL_ROOT_PASSWORD', 'root')
+              host = ENV.fetch('TEST_MYSQL_HOST', '127.0.0.1')
+              port = ENV.fetch('TEST_MYSQL_PORT', '3306')
+              db = ENV.fetch('TEST_MYSQL_DB', 'mysql')
+              connector = "mysql2://root:#{root_pw}@#{host}:#{port}/#{db}"
             rescue LoadError
               puts 'jdbc-mysql gem not found, trying another connector'
             end
