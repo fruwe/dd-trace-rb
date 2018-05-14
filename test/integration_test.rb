@@ -116,7 +116,7 @@ class TracerIntegrationTest < Minitest::Test
     tracer = Datadog::Tracer.new
     tracer.configure(
       enabled: true,
-      hostname: ENV.fetch('TEST_DDAGENT_HOST', '127.0.0.1'),
+      hostname: ENV.fetch('TEST_DDAGENT_HOST', 'localhost'),
       port: ENV.fetch('TEST_DDAGENT_PORT', 8216)
     )
 
@@ -132,7 +132,7 @@ class TracerIntegrationTest < Minitest::Test
     tracer = Datadog::Tracer.new
     tracer.configure(
       enabled: true,
-      hostname: ENV.fetch('TEST_DDAGENT_HOST', '127.0.0.1'),
+      hostname: ENV.fetch('TEST_DDAGENT_HOST', 'localhost'),
       port: ENV.fetch('TEST_DDAGENT_PORT', 8216)
     )
 
@@ -146,7 +146,7 @@ class TracerIntegrationTest < Minitest::Test
     tracer = Datadog::Tracer.new
     tracer.configure(
       enabled: true,
-      hostname: ENV.fetch('TEST_DDAGENT_HOST', '127.0.0.1'),
+      hostname: ENV.fetch('TEST_DDAGENT_HOST', 'localhost'),
       port: ENV.fetch('TEST_DDAGENT_PORT', 8216)
     )
 
@@ -183,7 +183,7 @@ class TracerIntegrationTest < Minitest::Test
       tracer = Datadog::Tracer.new
       tracer.configure(
         enabled: true,
-        hostname: ENV.fetch('TEST_DDAGENT_HOST', '127.0.0.1'),
+        hostname: ENV.fetch('TEST_DDAGENT_HOST', 'localhost'),
         port: ENV.fetch('TEST_DDAGENT_PORT', 8216),
         priority_sampling: true
       )

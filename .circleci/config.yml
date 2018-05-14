@@ -43,12 +43,12 @@ jobs:
     - image: circleci/buildpack-deps:xenial
       command: /sbin/init
     - image: postgres:9.6
-      environment:
+      env:
         - POSTGRES_PASSWORD=postgres
         - POSTGRES_USER=postgres
         - POSTGRES_DB=postgres
     - image: mysql:5.6
-      environment:
+      env:
         - MYSQL_ROOT_PASSWORD=root
         - MYSQL_PASSWORD=mysql
         - MYSQL_USER=mysql
@@ -56,8 +56,8 @@ jobs:
     - image: redis:3.0
     - image: mongo:3.5
     - image: memcached:1.5-alpine
-    - image: datadog/agent
-      environment:
+    - image: datadog/docker-dd-agent
+      env:
         - DD_APM_ENABLED=true
         - DD_BIND_HOST=0.0.0.0
         - DD_API_KEY=invalid_key_but_this_is_fine
