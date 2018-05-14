@@ -3,6 +3,7 @@ require 'ddtrace'
 require 'ddtrace/tracer'
 require 'thread'
 
+# rubocop:disable Metrics/ClassLength
 class TracerIntegrationTest < Minitest::Test
   def agent_receives_span_step1(tracer)
     stats = tracer.writer.stats

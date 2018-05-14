@@ -20,14 +20,14 @@ begin
     ::Rails::Application::Configuration.class_eval do
       def database_configuration
         { 'test' => { 'adapter' => 'postgresql',
-                    'encoding' => 'utf8',
-                    'reconnect' => false,
-                    'database' => db,
-                    'pool' => 5,
-                    'username' => user,
-                    'password' => pw,
-                    'host' => host,
-                    'port' => port } }
+                      'encoding' => 'utf8',
+                      'reconnect' => false,
+                      'database' => db,
+                      'pool' => 5,
+                      'username' => user,
+                      'password' => pw,
+                      'host' => host,
+                      'port' => port } }
       end
     end
   end
