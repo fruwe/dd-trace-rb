@@ -7,8 +7,8 @@ module Datadog
   class Writer
     attr_reader :transport, :worker, :priority_sampler
 
-    HOSTNAME = 'localhost'.freeze
-    PORT = '8126'.freeze
+    HOSTNAME = ENV.fetch('TEST_DDAGENT_HOST', '127.0.0.1').freeze
+    PORT = ENV.fetch('TEST_DDAGENT_PORT', 8216).freeze
 
     def initialize(options = {})
       # writer and transport parameters

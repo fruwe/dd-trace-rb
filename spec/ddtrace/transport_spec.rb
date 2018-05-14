@@ -3,7 +3,13 @@ require 'spec_helper'
 require 'ddtrace'
 
 RSpec.describe Datadog::HTTPTransport do
-  let(:transport) { described_class.new('localhost', '8126', options) }
+  let(:transport) do
+    described_class.new(
+      ENV.fetch('TEST_DDAGENT_HOST', '127.0.0.1'),
+      ENV.fetch('TEST_DDAGENT_PORT', 8216),
+      options
+    )
+  end
   let(:options) { {} }
 
   before(:each) do

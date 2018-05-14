@@ -113,7 +113,11 @@ class TracerIntegrationTest < Minitest::Test
     skip unless ENV['TEST_DATADOG_INTEGRATION'] # requires a running agent
 
     tracer = Datadog::Tracer.new
-    tracer.configure(enabled: true, hostname: '127.0.0.1', port: '8126')
+    tracer.configure(
+      enabled: true,
+      hostname: ENV.fetch('TEST_DDAGENT_HOST', '127.0.0.1'),
+      port: ENV.fetch('TEST_DDAGENT_PORT', 8216)
+    )
 
     agent_receives_span_step1(tracer)
     success = agent_receives_span_step2(tracer)
@@ -125,7 +129,11 @@ class TracerIntegrationTest < Minitest::Test
     # requires a running agent, and test does not apply to Java threading model
 
     tracer = Datadog::Tracer.new
-    tracer.configure(enabled: true, hostname: '127.0.0.1', port: '8126')
+    tracer.configure(
+      enabled: true,
+      hostname: ENV.fetch('TEST_DDAGENT_HOST', '127.0.0.1'),
+      port: ENV.fetch('TEST_DDAGENT_PORT', 8216)
+    )
 
     agent_receives_short_span(tracer)
   end
@@ -135,7 +143,11 @@ class TracerIntegrationTest < Minitest::Test
     # requires a running agent, and test does not apply to Java threading model
 
     tracer = Datadog::Tracer.new
-    tracer.configure(enabled: true, hostname: '127.0.0.1', port: '8126')
+    tracer.configure(
+      enabled: true,
+      hostname: ENV.fetch('TEST_DDAGENT_HOST', '127.0.0.1'),
+      port: ENV.fetch('TEST_DDAGENT_PORT', 8216)
+    )
 
     shutdown_exec_only_once(tracer)
   end
@@ -168,7 +180,12 @@ class TracerIntegrationTest < Minitest::Test
     # the agent then sends it or not depending on the priority, but they are all sent.
     3.times do |i|
       tracer = Datadog::Tracer.new
-      tracer.configure(enabled: true, hostname: '127.0.0.1', port: '8126', priority_sampling: true)
+      tracer.configure(
+        enabled: true,
+        hostname: ENV.fetch('TEST_DDAGENT_HOST', '127.0.0.1'),
+        port: ENV.fetch('TEST_DDAGENT_PORT', 8216),
+        priority_sampling: true
+      )
 
       span_a = tracer.start_span('span_a')
       span_b = tracer.start_span('span_b', child_of: span_a.context)
