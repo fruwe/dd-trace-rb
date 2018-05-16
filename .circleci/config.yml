@@ -1,116 +1,26 @@
 version: 2.0
 jobs:
-  checkout-2.2.10:
-    working_directory: ~/DataDog/dd-trace-rb
-    shell: /bin/bash --login
-    docker:
-      - image: circleci/ruby:2.2.10
-    steps:
-      - checkout
-      - save_cache:
-          key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
-          paths:
-            - ~/DataDog/dd-trace-rb
-  build-2.2.10:
-    working_directory: ~/DataDog/dd-trace-rb
-    shell: /bin/bash --login
-    docker:
-      - image: circleci/ruby:2.2.10
-        environment:
-          - BUNDLE_PATH: /home/circleci/DataDog/dd-trace-rb/vendor/bundle
-    steps:
-      - run:
-          name: Set gem version number
-          command: |
-            echo 'export VERSION_SUFFIX=.pre.$CIRCLE_BUILD_NUM' >> $BASH_ENV
-            source $BASH_ENV
-      - restore_cache:
-          keys:
-            - v1-repo-2.2.10-{{ .Environment.CIRCLE_SHA1 }}
-            - v1-repo-{{ .Environment.CIRCLE_SHA1 }}
-      - run:
-          name: Install Bundler
-          command: gem install bundler
-      - run:
-          name: Install gem dependencies
-          command: bundle install
-      - run:
-          name: Install Appraisal gems
-          command: bundle exec appraisal install
-      - run:
-          name: Compute bundle checksum
-          command: |
-            cat Gemfile.lock gemfiles/*.gemfile.lock > bundle_checksum
-      - save_cache:
-          key: v1-repo-2.2.10-{{ .Environment.CIRCLE_SHA1 }}
-          paths:
-            - /home/circleci/DataDog/dd-trace-rb
-  test-2.2.10:
-    working_directory: ~/DataDog/dd-trace-rb
-    shell: /bin/bash --login
-    docker:
-      - image: circleci/ruby:2.2.10
-        environment:
-          - BUNDLE_PATH: /home/circleci/DataDog/dd-trace-rb/vendor/bundle
-      - image: postgres:9.6
-        environment:
-          - POSTGRES_PASSWORD=postgres
-          - POSTGRES_USER=postgres
-          - POSTGRES_DB=postgres
-      - image: mysql:5.6
-        environment:
-          - MYSQL_ROOT_PASSWORD=root
-          - MYSQL_PASSWORD=mysql
-          - MYSQL_USER=mysql
-      - image: elasticsearch:2.4
-      - image: redis:3.0
-      - image: mongo:3.5
-      - image: memcached:1.5-alpine
-      - image: datadog/docker-dd-agent
-        environment:
-          - DD_APM_ENABLED=true
-          - DD_BIND_HOST=0.0.0.0
-          - DD_API_KEY=invalid_key_but_this_is_fine
-    steps:
-      - run:
-          name: Set gem version number
-          command: |
-            echo 'export VERSION_SUFFIX=.pre.$CIRCLE_BUILD_NUM' >> $BASH_ENV
-            source $BASH_ENV
-      - restore_cache:
-          keys:
-            - v1-repo-2.2.10-{{ .Environment.CIRCLE_SHA1 }}
-      - run:
-          name: Run tests
-          command: bundle exec rake ci
-  checkout-2.3.7:
-    working_directory: ~/DataDog/dd-trace-rb
-    shell: /bin/bash --login
-    docker:
-      - image: circleci/ruby:2.3.7
-    steps:
-      - checkout
-      - save_cache:
-          key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
-          paths:
-            - ~/DataDog/dd-trace-rb
   build-2.3.7:
     working_directory: ~/DataDog/dd-trace-rb
     shell: /bin/bash --login
     docker:
       - image: circleci/ruby:2.3.7
         environment:
-          - BUNDLE_PATH: /home/circleci/DataDog/dd-trace-rb/vendor/bundle
+          - BUNDLE_PATH: /home/circleci/bundle
     steps:
       - run:
           name: Set gem version number
           command: |
             echo 'export VERSION_SUFFIX=.pre.$CIRCLE_BUILD_NUM' >> $BASH_ENV
             source $BASH_ENV
+      - checkout
+      - run:
+          name: Initialize bundle cache key
+          command: |
+            touch .circleci/bundle_checksum
       - restore_cache:
           keys:
-            - v1-repo-2.3.7-{{ .Environment.CIRCLE_SHA1 }}
-            - v1-repo-{{ .Environment.CIRCLE_SHA1 }}
+            - v1-bundle-2.3.7-{{ checksum ".circleci/bundle_checksum" }}
       - run:
           name: Install Bundler
           command: gem install bundler
@@ -123,18 +33,22 @@ jobs:
       - run:
           name: Compute bundle checksum
           command: |
-            cat Gemfile.lock gemfiles/*.gemfile.lock > bundle_checksum
+            cat Gemfile.lock gemfiles/*.gemfile.lock > .circleci/bundle_checksum
       - save_cache:
           key: v1-repo-2.3.7-{{ .Environment.CIRCLE_SHA1 }}
           paths:
             - /home/circleci/DataDog/dd-trace-rb
+      - save_cache:
+          key: v1-bundle-2.3.7-{{ checksum ".circleci/bundle_checksum" }}
+          paths:
+            - /home/circleci/bundle
   test-2.3.7:
     working_directory: ~/DataDog/dd-trace-rb
     shell: /bin/bash --login
     docker:
       - image: circleci/ruby:2.3.7
         environment:
-          - BUNDLE_PATH: /home/circleci/DataDog/dd-trace-rb/vendor/bundle
+          - BUNDLE_PATH: /home/circleci/bundle
       - image: postgres:9.6
         environment:
           - POSTGRES_PASSWORD=postgres
@@ -163,119 +77,18 @@ jobs:
       - restore_cache:
           keys:
             - v1-repo-2.3.7-{{ .Environment.CIRCLE_SHA1 }}
-      - run:
-          name: Run tests
-          command: bundle exec rake ci
-  checkout-2.4.4:
-    working_directory: ~/DataDog/dd-trace-rb
-    shell: /bin/bash --login
-    docker:
-      - image: circleci/ruby:2.4.4
-    steps:
-      - checkout
-      - save_cache:
-          key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
-          paths:
-            - ~/DataDog/dd-trace-rb
-  build-2.4.4:
-    working_directory: ~/DataDog/dd-trace-rb
-    shell: /bin/bash --login
-    docker:
-      - image: circleci/ruby:2.4.4
-        environment:
-          - BUNDLE_PATH: /home/circleci/DataDog/dd-trace-rb/vendor/bundle
-    steps:
-      - run:
-          name: Set gem version number
-          command: |
-            echo 'export VERSION_SUFFIX=.pre.$CIRCLE_BUILD_NUM' >> $BASH_ENV
-            source $BASH_ENV
       - restore_cache:
           keys:
-            - v1-repo-2.4.4-{{ .Environment.CIRCLE_SHA1 }}
-            - v1-repo-{{ .Environment.CIRCLE_SHA1 }}
-      - run:
-          name: Install Bundler
-          command: gem install bundler
-      - run:
-          name: Install gem dependencies
-          command: bundle install
-      - run:
-          name: Install Appraisal gems
-          command: bundle exec appraisal install
-      - run:
-          name: Compute bundle checksum
-          command: |
-            cat Gemfile.lock gemfiles/*.gemfile.lock > bundle_checksum
-      - save_cache:
-          key: v1-repo-2.4.4-{{ .Environment.CIRCLE_SHA1 }}
-          paths:
-            - /home/circleci/DataDog/dd-trace-rb
-  test-2.4.4:
-    working_directory: ~/DataDog/dd-trace-rb
-    shell: /bin/bash --login
-    docker:
-      - image: circleci/ruby:2.4.4
-        environment:
-          - BUNDLE_PATH: /home/circleci/DataDog/dd-trace-rb/vendor/bundle
-      - image: postgres:9.6
-        environment:
-          - POSTGRES_PASSWORD=postgres
-          - POSTGRES_USER=postgres
-          - POSTGRES_DB=postgres
-      - image: mysql:5.6
-        environment:
-          - MYSQL_ROOT_PASSWORD=root
-          - MYSQL_PASSWORD=mysql
-          - MYSQL_USER=mysql
-      - image: elasticsearch:2.4
-      - image: redis:3.0
-      - image: mongo:3.5
-      - image: memcached:1.5-alpine
-      - image: datadog/docker-dd-agent
-        environment:
-          - DD_APM_ENABLED=true
-          - DD_BIND_HOST=0.0.0.0
-          - DD_API_KEY=invalid_key_but_this_is_fine
-    steps:
-      - run:
-          name: Set gem version number
-          command: |
-            echo 'export VERSION_SUFFIX=.pre.$CIRCLE_BUILD_NUM' >> $BASH_ENV
-            source $BASH_ENV
-      - restore_cache:
-          keys:
-            - v1-repo-2.4.4-{{ .Environment.CIRCLE_SHA1 }}
+            - v1-bundle-2.3.7-{{ checksum ".circleci/bundle_checksum" }}
       - run:
           name: Run tests
           command: bundle exec rake ci
 
 workflows:
   version: 2
-  build-and-test-2.2.10:
-    jobs:
-      - checkout-2.2.10
-      - build-2.2.10:
-          requires:
-            - checkout-2.2.10
-      - test-2.2.10:
-          requires:
-            - build-2.2.10
   build-and-test-2.3.7:
     jobs:
-      - checkout-2.3.7
-      - build-2.3.7:
-          requires:
-            - checkout-2.3.7
+      - build-2.3.7
       - test-2.3.7:
           requires:
             - build-2.3.7
-  build-and-test-2.4.4:
-    jobs:
-      - checkout-2.4.4
-      - build-2.4.4:
-          requires:
-            - checkout-2.4.4
-      - test-2.4.4:
-          requires:
-            - build-2.4.4
